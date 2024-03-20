@@ -1,0 +1,664 @@
+/*
+ * tegra186-quill-p3310-c03-00-base.dts Quill C03 Board
+ *
+ * Copyright (c) 2016-2019, NVIDIA CORPORATION. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ */
+
+#include "tegra186-quill-p3310-1000-a00-00-base.dts"
+
+/ {
+	nvidia,dtsfilename = __FILE__;
+	nvidia,dtbbuildtime = __DATE__, __TIME__;
+	nvidia,fastboot-usb-vid = <0x0955>;
+	nvidia,fastboot-usb-pid = <0xee16>;
+
+	pinmux@2430000 {
+		common {
+			gpio_edp2_pp5 {
+				status = "okay";
+			};
+
+			gpio_edp3_pp6 {
+				status = "okay";
+			};
+		};
+	};
+
+	gpio@2200000 {
+		/* gpio-name for 40-pin header, gpio-name given as COL(10) x ROW(20) */
+		gpio-line-names = "",   "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",    "",    "",     "",     "",    "",    "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",      "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",    "",    "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "GPIO8_ALS_PROX_INT",     "GPIO11_AP_WAKE_BT",
+		"",     "",     "I2S0_CLK",     "I2S0_SDOUT",     "I2S0_SDIN",     "I2S0_LRCLK",     "AUDIO_MCLK",    "GPIO20_AUD_INT",    "GPIO1_AUD_RST",   "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "SPI1_CLK",     "SPI1_MISO",     "SPI1_MOSI",
+		"SPI1_CS0",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "UART0_RTS",     "UART0_CTS",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "GPIO16_MDM_WAKE_AP",     "",     "",     "",     "",     "",     "",     "",   "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "";
+
+		sdmmc-wake-support-input {
+			status = "okay";
+		};
+
+		sdmmc-wake-support-output {
+			status = "okay";
+		};
+	};
+
+	gpio@c2f0000 {
+		/* gpio-name for 40-pin header, gpio-name given as COL(10) x ROW(20) */
+		gpio-line-names = "",   "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",    "",    "",     "",     "",    "",    "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+		"",     "",     "",     "",     "",     "",     "",     "",     "",      "",
+		"AO_DMIC_IN_DAT",     "AO_DMIC_IN_CLK",     "GPIO9_MOTION_INT",     "",     "",     "",     "",     "",     "",     "",
+		"",    "",    "",     "",     "",     "",     "",     "",     "",     "";
+	};
+
+	fixed-regulators {
+		regulator@1 {
+			gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(P, 6) 0>;
+                };
+	};
+
+	sdhci@3400000 {
+		cd-gpios = <&tegra_main_gpio TEGRA_MAIN_GPIO(P, 5) 0>;
+		nvidia,cd-wakeup-capable;
+	};
+
+	hdr40_i2c0: i2c@3160000 {
+		ina3221x@40 {
+			channel@0 {
+				ti,shunt-resistor-mohm = <10>;
+			};
+			channel@1 {
+				ti,shunt-resistor-mohm = <10>;
+			};
+		};
+		ina3221x@41 {
+			channel@0 {
+				ti,shunt-resistor-mohm = <20>;
+			};
+			channel@1 {
+				ti,shunt-resistor-mohm = <10>;
+			};
+			channel@2 {
+				ti,rail-name = "VDD_SYS_DDR";
+				ti,shunt-resistor-mohm = <10>;
+			};
+		};
+	};
+
+	hdr40_i2c1: i2c@c240000 {
+		bmi160@69 {
+			compatible = "bmi,bmi160";
+			reg = <0x69>;
+			interrupt-parent = <&tegra_aon_gpio>;
+			interrupts = <TEGRA_AON_GPIO(AA, 2) 0x01>;
+			accelerometer_matrix    = [01 00 00 00 01 00 00 00 01];
+			gyroscope_matrix        = [01 00 00 00 01 00 00 00 01];
+			accelerometer_delay_us_min = <1250>;
+			gyroscope_delay_us_min = <1250>;
+			vdd-supply = <&spmic_sd3>;
+			vdd_IO-supply = <&spmic_sd3>;
+			status = "disabled";
+		};
+	};
+
+	mttcan@c310000 {
+		status = "okay";
+		gpio_can_stb = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 0) GPIO_ACTIVE_HIGH>;
+		gpio_can_en = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 1) GPIO_ACTIVE_HIGH>;
+	};
+
+	mttcan@c320000 {
+		status = "okay";
+		gpio_can_stb = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 6) GPIO_ACTIVE_HIGH>;
+		gpio_can_en = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 7) GPIO_ACTIVE_HIGH>;
+	};
+
+	ahci-sata@3507000 {
+		gpios = <&spmic 7 0>;
+	};
+
+	pcie-controller@10003000 {
+		pci@1,0 {
+			nvidia,num-lanes = <4>;
+			nvidia,disable-clock-request;
+		};
+		pci@2,0 {
+			nvidia,num-lanes = <0>;
+		};
+		pci@3,0 {
+			nvidia,num-lanes = <1>;
+		};
+	};
+
+        xhci@3530000 {
+		phys = <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-0}>,
+			<&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-1}>,
+			<&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-2}>;			//usb3-1 removed for J140(fd)
+		phy-names = "usb2-0", "usb2-1", "usb2-2";
+		nvidia,boost_cpu_freq = <1200>;
+	};
+
+	xusb_padctl@3520000 {
+		/*ports {										//removed for J140(fd)
+			usb3-1 {
+				status = "disabled";
+			};
+			usb3-0 {
+				nvidia,usb2-companion = <1>;
+				status = "okay";
+			};
+		};*/
+	};
+
+	fixed-regulators {						//added for fan on J140(fd)
+		vdd_fan: regulator@13 {
+			gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(J, 6) GPIO_ACTIVE_LOW>;  
+		};
+	};
+
+	pwm_fan_shared_data: pfsd {					//added for fan on J140(fd)
+		status = "okay";
+		num_resources = <0>;
+		secret = <47>;
+		active_steps = <10>;
+		active_rpm = <0 1000 2000 3000 4000 5000 6000 7000 10000 11000>;
+		rpm_diff_tolerance = <2>;
+		active_rru = <40 2 1 1 1 1 1 1 1 1>;
+		active_rrd = <40 2 1 1 1 1 1 1 1 1>;
+		state_cap_lookup = <2 2 2 2 3 3 3 4 4 4>;
+		pwm_period = <45334>;
+		pwm_id = <3>;
+		step_time = <100>; /* mesecs */
+		state_cap = <7>;
+		active_pwm_max = <256>;
+		tach_period = <1000>;
+		/*pwm_gpio = <&tegra_aon_gpio TEGRA_AON_GPIO(V, 6) GPIO_ACTIVE_LOW>; /* TEGRA_MAIN_GPIO_PV6 */
+		pwm_gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(J, 6) GPIO_ACTIVE_LOW>; /* TEGRA_MAIN_GPIO_PJ6 */
+	};
+	pwm-fan {							//added for fan on J140(fd)
+		status = "okay";
+		compatible = "pwm-fan";
+
+		shared_data = <&pwm_fan_shared_data>;
+		active_pwm = <0 80 120 160 255 255 255 255 255 255>;
+	};
+
+
+	/delete-node/ spi@c260000;						//deleted(fd)
+
+	spi1: spi@c260000 {							//new added(fd)
+		status="okay";
+		compatible = "nvidia,tegra186-spi";
+		reg = <0x0 0x0c260000 0x0 0x10000>;
+		interrupts = <0 37 0x04>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		iommus = <&smmu TEGRA_SID_GPCDMA_0>;
+		dmas = <&gpcdma 16>, <&gpcdma 16>;
+		dma-names = "rx", "tx";
+		nvidia,clk-parents = "pll_p", "osc";
+		spi-max-frequency = <25000000>;
+		clocks = <&tegra_car TEGRA186_CLK_SPI2>,
+			<&tegra_car TEGRA186_CLK_PLLP_OUT0>,
+			<&tegra_car TEGRA186_CLK_OSC>;
+		clock-names = "spi", "pll_p", "osc";
+		resets = <&tegra_car TEGRA186_RESET_SPI2>;
+		reset-names = "spi";
+			
+		spi1_0 {
+			status = "okay";
+			#address-cells = <0x1>;
+			#size-cells = <0x0>;
+			compatible = "spidev";
+			reg = <0>;
+			spi-max-frequency = <25000000>;
+			nvidia,enable-hw-based-cs;
+			nvidia,cs-setup-clk-count = <0x1e>;
+			nvidia,cs-hold-clk-count = <0x1e>;
+			nvidia,rx-clk-tap-delay = <0x1f>;
+			nvidia,tx-clk-tap-delay = <0x0>;			
+
+			irq-gpio = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 2) 0x01>;
+			interrupt-parent = <&tegra_aon_gpio>;
+			interrupts = <TEGRA_AON_GPIO(AA, 2) 0x01>; // GPIO_PAA2
+		};
+	};
+
+	spi@3230000 {			//new(fd)
+		status="okay";
+		spi2_0 {
+			compatible = "spidev";
+			status = "okay";
+			reg = <0>;
+			spi-max-frequency = <25000000>;			
+		};
+		spi2_1 {
+			compatible = "spidev";
+			status = "okay";
+			reg = <1>;
+			spi-max-frequency = <25000000>;			
+		};
+	};
+
+
+	spi@3240000 {			//new(fd)
+		status="okay";
+		spi3_0 {
+			compatible = "spidev";
+			status = "okay";
+			reg = <0>;
+			spi-max-frequency = <25000000>;			
+		};
+		spi3_1 {
+			compatible = "spidev";
+			status = "okay";
+			reg = <1>;
+			spi-max-frequency = <25000000>;			
+		};
+	};
+
+//######################################################################################################################
+
+	host1x {
+		vi@15700000 {
+			num-channels = <1>;
+			status="okay";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				status="okay";
+				//delete-node/ port@0;
+				port@0 {
+					status="okay";
+					reg = <0>;
+					rbpcv2_imx219_vi_in0: endpoint {
+						status="okay";
+						port-index = <0>;
+						bus-width = <2>;
+						remote-endpoint = <&rbpcv2_imx219_csi_out0>;
+					};
+				};
+			};
+		};
+
+		nvcsi@150c0000 {
+			status="okay";
+			num-channels = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			//delete-node/ channel@0;
+			channel@0 {
+				reg = <0>;
+				ports {
+					status="okay";
+					#address-cells = <1>;
+					#size-cells = <0>;
+					port@0 {
+						reg = <0>;
+						status="okay";
+						rbpcv2_imx219_csi_in0: endpoint@0 {
+							port-index = <0>;
+							bus-width = <2>;
+							remote-endpoint = <&rbpcv2_imx219_dual_out0>;
+							status="okay";
+						};
+					};
+					port@1 {
+						reg = <1>;
+						status="okay";
+						rbpcv2_imx219_csi_out0: endpoint@1 {
+							remote-endpoint = <&rbpcv2_imx219_vi_in0>;
+							status="okay";
+						};
+					};
+				};
+			};
+		};
+	};
+
+	i2c@c250000 {									
+		status="okay";
+		imx219_cam0: rbpcv2_imx219_e@10 {
+			status="okay";
+			reset-gpios = <&tegra_main_gpio TEGRA_MAIN_GPIO(R, 1) GPIO_ACTIVE_HIGH>;
+			compatible = "nvidia,imx219";
+			reg = <0x10>;
+
+			devnode = "video0";
+
+			physical_w = "3.680";
+			physical_h = "2.760";
+
+			sensor_model = "imx219";
+
+			use_sensor_mode_id = "true";
+
+			mode0 { 
+				mclk_khz = "24000";
+				num_lanes = "2";
+				tegra_sinterface = "serial_e";
+				phy_mode = "DPHY";
+				discontinuous_clk = "yes";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+
+				active_w = "3264";
+				active_h = "2464";
+				pixel_t = "bayer_rggb";
+				readout_orientation = "90";
+				line_length = "3448";
+				inherent_gain = "1";
+				mclk_multiplier = "9.33";
+				pix_clk_hz = "182400000";
+
+				gain_factor = "16";
+				framerate_factor = "1000000";
+				exposure_factor = "1000000";
+				min_gain_val = "16"; 
+				max_gain_val = "170"; 
+				step_gain_val = "1";
+				default_gain = "16"; 
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "1";
+				min_framerate = "2000000"; 
+				max_framerate = "21000000"; 
+				step_framerate = "1";
+				default_framerate = "21000000"; 
+				min_exp_time = "13"; 
+				max_exp_time = "683709"; 
+				step_exp_time = "1";
+				default_exp_time = "2495"; 
+
+				embedded_metadata_height = "2";
+			};
+			mode1 { 
+				mclk_khz = "24000";
+				num_lanes = "2";
+				tegra_sinterface = "serial_e";
+				phy_mode = "DPHY";
+				discontinuous_clk = "yes";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+
+				active_w = "3264";
+				active_h = "1848";
+				pixel_t = "bayer_rggb";
+				readout_orientation = "90";
+				line_length = "3448";
+				inherent_gain = "1";
+				mclk_multiplier = "9.33";
+				pix_clk_hz = "182400000";
+
+				gain_factor = "16";
+				framerate_factor = "1000000";
+				exposure_factor = "1000000";
+				min_gain_val = "16"; 
+				max_gain_val = "170"; 
+				step_gain_val = "1";
+				default_gain = "16"; 
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "1";
+				min_framerate = "2000000"; 
+				max_framerate = "28000000"; 
+				step_framerate = "1";
+				default_framerate = "28000000"; 
+				min_exp_time = "13"; 
+				max_exp_time = "683709"; 
+				step_exp_time = "1";
+				default_exp_time = "2495"; 
+
+				embedded_metadata_height = "2";
+			};
+			mode2 { 
+				mclk_khz = "24000";
+				num_lanes = "2";
+				tegra_sinterface = "serial_e";
+				phy_mode = "DPHY";
+				discontinuous_clk = "yes";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+
+				active_w = "1920";
+				active_h = "1080";
+				pixel_t = "bayer_rggb";
+				readout_orientation = "90";
+				line_length = "3448";
+				inherent_gain = "1";
+				mclk_multiplier = "9.33";
+				pix_clk_hz = "182400000";
+
+				gain_factor = "16";
+				framerate_factor = "1000000";
+				exposure_factor = "1000000";
+				min_gain_val = "16"; 
+				max_gain_val = "170"; 
+				step_gain_val = "1";
+				default_gain = "16"; 
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "1";
+				min_framerate = "2000000"; 
+				max_framerate = "30000000"; 
+				step_framerate = "1";
+				default_framerate = "30000000"; 
+				min_exp_time = "13"; 
+				max_exp_time = "683709"; 
+				step_exp_time = "1";
+				default_exp_time = "2495"; 
+
+				embedded_metadata_height = "2";
+			};
+			mode3 { 
+				mclk_khz = "24000";
+				num_lanes = "2";
+				tegra_sinterface = "serial_e";
+				phy_mode = "DPHY";
+				discontinuous_clk = "yes";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+
+				active_w = "1280";
+				active_h = "720";
+				pixel_t = "bayer_rggb";
+				readout_orientation = "90";
+				line_length = "3448";
+				inherent_gain = "1";
+				mclk_multiplier = "9.33";
+				pix_clk_hz = "182400000";
+
+				gain_factor = "16";
+				framerate_factor = "1000000";
+				exposure_factor = "1000000";
+				min_gain_val = "16"; 
+				max_gain_val = "170"; 
+				step_gain_val = "1";
+				default_gain = "16"; 
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "1";
+				min_framerate = "2000000"; 
+				max_framerate = "60000000"; 
+				step_framerate = "1";
+				default_framerate = "60000000"; 
+				min_exp_time = "13"; 
+				max_exp_time = "683709"; 
+				step_exp_time = "1";
+				default_exp_time = "2495"; 
+
+				embedded_metadata_height = "2";
+			};
+			mode4 { 
+				mclk_khz = "24000";
+				num_lanes = "2";
+				tegra_sinterface = "serial_e";
+				phy_mode = "DPHY";
+				discontinuous_clk = "yes";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+
+				active_w = "1280";
+				active_h = "720";
+				pixel_t = "bayer_rggb";
+				readout_orientation = "90";
+				line_length = "3448";
+				inherent_gain = "1";
+				mclk_multiplier = "9.33";
+				pix_clk_hz = "169600000";
+
+				gain_factor = "16";
+				framerate_factor = "1000000";
+				exposure_factor = "1000000";
+				min_gain_val = "16"; 
+				max_gain_val = "170"; 
+				step_gain_val = "1";
+				default_gain = "16"; 
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "1";
+				min_framerate = "2000000"; 
+				max_framerate = "120000000"; 
+				step_framerate = "1";
+				default_framerate = "120000000"; 
+				min_exp_time = "13"; 
+				max_exp_time = "683709"; 
+				step_exp_time = "1";
+				default_exp_time = "2495"; 
+
+				embedded_metadata_height = "2";
+			};
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				status="okay";
+
+				port@0 {
+					reg = <0>;
+					status="okay";
+					rbpcv2_imx219_dual_out0: endpoint {
+						status="okay";
+						port-index = <0>;
+						bus-width = <2>;
+						remote-endpoint = <&rbpcv2_imx219_csi_in0>;
+					};
+				};
+			};
+		};
+	};
+	lens_imx219@RBPCV2 {
+		status="okay";
+		min_focus_distance = "0.0";
+		hyper_focal = "0.0";
+		focal_length = "3.04";
+		f_number = "2.0";
+		aperture = "0.0";
+	};
+
+
+//######################################################################################################################
+
+
+       bluedroid_pm {
+		bluedroid_pm,reset-gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(H, 5) 0>;
+        };
+
+	bpmp_i2c {
+		spmic@3c {
+			pinmux@0 {
+				pin_gpio2 {
+					status = "disabled";
+				};
+				pin_gpio3 {
+					status = "disabled";
+				};
+				pin_gpio7 {
+					drive-push-pull = <1>;
+				};
+			};
+
+			regulators {
+				ldo0 {
+					maxim,active-fps-source = <MAX77620_FPS_SRC_NONE>;
+				};
+
+				ldo6 {
+					maxim,active-fps-source = <MAX77620_FPS_SRC_NONE>;
+					regulator-boot-on;
+					regulator-always-on;
+				};
+
+				ldo7 {
+					regulator-min-microvolt = <1000000>;
+					regulator-max-microvolt = <1000000>;
+				};
+
+				ldo8 {
+					regulator-name = "dvdd-pex";
+					regulator-min-microvolt = <1000000>;
+					regulator-max-microvolt = <1000000>;
+				};
+			};
+		};
+	};
+
+	sound {
+		hdr40_snd_link_i2s: nvidia,dai-link-1 { };
+	};
+};
+
+
+/ {
+
+	tegra-camera-platform {
+		compatible = "nvidia, tegra-camera-platform";
+
+		num_csi_lanes = <4>;
+		max_lane_speed = <1500000>;
+		min_bits_per_pixel = <10>;
+		vi_peak_byte_per_pixel = <2>;
+		vi_bw_margin_pct = <25>;
+		max_pixel_rate = <240000>;
+		isp_peak_byte_per_pixel = <5>;
+		isp_bw_margin_pct = <25>;
+
+		modules {
+			status="okay";
+			cam_module0: module0 {
+				badge = "porg_front_RBPCV2";
+				position = "front";
+				orientation = "1";
+				status="okay";
+				cam_module0_drivernode0: drivernode0 {
+					status="okay";
+					pcl_id = "v4l2_sensor";
+					devname = "imx219 7-0010";
+					proc-device-tree = "/proc/device-tree/i2c@c250000/rbpcv2_imx219_e@10";	
+				};
+				cam_module0_drivernode1: drivernode1 {
+					status="okay";
+					pcl_id = "v4l2_lens";
+					proc-device-tree = "/proc/device-tree/lens_imx219@RBPCV2/";
+				};
+			};
+		};
+	};
+};
